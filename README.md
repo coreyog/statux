@@ -1,1 +1,2 @@
-# statux
+# Statux
+Multiline/multithreaded output
