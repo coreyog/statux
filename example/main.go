@@ -6,11 +6,10 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
-	// "strconv"
 	"sync"
 	"time"
 
-	"statux"
+	"github.com/coreyog/statux"
 
 	"github.com/cheggaaa/pb/v3"
 )
