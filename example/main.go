@@ -63,7 +63,10 @@ func counter(liner io.StringWriter, wg *sync.WaitGroup) {
 		time.Sleep(time.Millisecond * time.Duration(rand.Intn(25)*speed))
 
 		bar.Increment()
-		liner.WriteString(bar.String())
+		_, err := liner.WriteString(bar.String())
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	wg.Done()
