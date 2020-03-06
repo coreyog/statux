@@ -1,9 +1,9 @@
 package statux
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"sync"
@@ -20,7 +20,7 @@ type Statux struct {
 	finished bool
 }
 
-type LineWriter struct {
+type lineWriter struct {
 	parent *Statux
 	line   int
 }
@@ -56,7 +56,7 @@ func New(count int) (stat *Statux, err error) {
 	}, nil
 }
 
-func (stat *Statux) Write(index int, data []byte) (n int, err error) {
+func (stat *Statux) WriteString(index int, str string) (n int, err error) {
 	if stat.finished {
 		return 0, nil
 	}
@@ -83,28 +83,29 @@ func (stat *Statux) Write(index int, data []byte) (n int, err error) {
 	goterm.MoveCursorBackward(stat.maxWidth)
 	goterm.Flush()
 
-	bytes.ReplaceAll(data, []byte{'\n'}, []byte{' '})
+	str = strings.ReplaceAll(str, "\n", " ")
 
-	if len(data) > stat.maxWidth {
-		data = data[:stat.maxWidth-1]
-		data = append(data, '$')
+	if len(str) > stat.maxWidth {
+		str = str[:stat.maxWidth-1]
+		str += "$"
 	}
 
-	if len(data) < stat.maxWidth {
-		data = append(data, bytes.Repeat([]byte(" "), stat.maxWidth-len(data)-1)...)
+	if len(str) < stat.maxWidth {
+		// data = append(data, bytes.Repeat([]byte(" "), stat.maxWidth-len(data)-1)...)
+		str += strings.Repeat(" ", stat.maxWidth-len(str)-1)
 	}
 
-	return fmt.Printf("%s", data)
+	return fmt.Print(str)
 }
 
-func (stat *Statux) BuildLineWriters() (lines []LineWriter) {
+func (stat *Statux) BuildLineWriters() (lines []io.StringWriter) {
 	if stat.finished {
 		return nil
 	}
 
-	lines = make([]LineWriter, stat.count)
+	lines = make([]io.StringWriter, stat.count)
 	for i := 0; i < stat.count; i++ {
-		lines[i] = LineWriter{
+		lines[i] = lineWriter{
 			parent: stat,
 			line:   i,
 		}
@@ -137,8 +138,12 @@ func (stat *Statux) IsFinished() bool {
 	return stat.finished
 }
 
-func (line LineWriter) Write(data []byte) (n int, err error) {
-	return line.parent.Write(line.line, data)
+func (line lineWriter) WriteString(str string) (n int, err error) {
+	return line.parent.WriteString(line.line, str)
+}
+
+func (line lineWriter) Write(data []byte) (n int, err error) {
+	return line.WriteString(string(data))
 }
 
 func getConsoleSize() (x int, y int, err error) {

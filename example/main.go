@@ -53,7 +53,7 @@ func main() {
 	fmt.Println("DONE")
 }
 
-func counter(liner io.Writer, wg *sync.WaitGroup) {
+func counter(liner io.StringWriter, wg *sync.WaitGroup) {
 	temp := `{{bar . "[" "#" ">" " " "]" }}`
 	bar := pb.New(100).SetTemplateString(temp).SetMaxWidth(50)
 
@@ -63,7 +63,7 @@ func counter(liner io.Writer, wg *sync.WaitGroup) {
 		time.Sleep(time.Millisecond * time.Duration(rand.Intn(25)*speed))
 
 		bar.Increment()
-		liner.Write([]byte(bar.String()))
+		liner.WriteString(bar.String())
 	}
 
 	wg.Done()
