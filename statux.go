@@ -127,7 +127,8 @@ func (stat *Statux) Finish() {
 		goterm.Flush()
 	}
 
-	fmt.Println("\033[?25h") // show cursor
+	fmt.Println()
+	fmt.Print("\033[?25h") // show cursor
 	goterm.Flush()
 
 	stat.finished = true
