@@ -127,6 +127,7 @@ func (stat *Statux) Finish() {
 		goterm.Flush()
 	}
 
+	goterm.MoveCursorBackward(stat.maxWidth)
 	fmt.Println()
 	fmt.Print("\033[?25h") // show cursor
 	goterm.Flush()
