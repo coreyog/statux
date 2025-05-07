@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/buger/goterm"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 type Statux struct {
@@ -148,5 +148,5 @@ func (line lineWriter) Write(data []byte) (n int, err error) {
 }
 
 func getConsoleSize() (x int, y int, err error) {
-	return terminal.GetSize(int(os.Stdout.Fd()))
+	return term.GetSize(int(os.Stdout.Fd()))
 }
